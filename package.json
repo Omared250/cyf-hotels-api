@@ -1,0 +1,22 @@
+{
+  "name": "cyf-hotels-api",
+  "version": "1.0.0",
+  "description": "is an api where you can have information about bookings, customer and hotels",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Omared250/cyf-hotels-api.git"
+  },
+  "author": "omar ascanio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Omared250/cyf-hotels-api/issues"
+  },
+  "homepage": "https://github.com/Omared250/cyf-hotels-api#readme",
+  "dependencies": {
+    "npm": "^8.1.3"
+  }
+}
