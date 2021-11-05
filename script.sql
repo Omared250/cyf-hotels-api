@@ -245,3 +245,40 @@ from bookings b
 inner join customers c on b.customer_id=c.id 
 inner join hotels h on h.id=b.hotel_id
 where b.nights >= 5;
+
+-- EXERCISE 6 WEEK 2
+
+-- returning a table with order by id 
+select * from customers order by id;
+
+-- returning a table by id in a descending way
+select * from bookings order by id desc;
+
+-- returning just 5 hotels from a table hotels
+select * from hotels limit 5;
+
+-- returning just a especific ids
+select * from customers where id in (1,3,7);
+
+-- returning all the names from the table where the name start with a S if you use '%%'
+-- is that the name have to include those letters together
+select * from customers where name like 'S%';
+
+-- Retrieve all customers whose name starts with the letter S
+select * from customers where name like 'S%';
+
+-- Retrieve all hotels which have the word Hotel in their name
+select * from hotels where name like '%Hotel%';
+
+-- Retrieve the booking start date, customer name, hotel name for the top 5 bookings ordered 
+-- by number of nights in descending order
+select
+	b.nights,
+	b.checkin_date,
+	c.name as customer_name,
+	h.name as hotel_name
+from bookings b 
+inner join customers c on c.id=b.customer_id 
+inner join hotels h on h.id=b.hotel_id
+order by nights desc
+limit 5;
