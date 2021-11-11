@@ -102,8 +102,37 @@ const addNewCustomerRow = async (req, res) => {
     }
 }
 
+/*
+Add a new GET endpoint /customers/:customerId/bookings to load all the bookings of a specific customer. 
+Returns the following information: check in date, number of nights, hotel name, hotel postcode and customer_name.
+*/
+
+const getEspecificBookingById = async (req, res) => {
+    // getting the param 
+    const customerId = req.params.customerId;
+
+    // checking if the id is a valid number
+    if (!Number.isInteger(customerId)) {
+        return res.status(400).send('The given ID is not valid!')
+    }
+
+    // making the connection with the data base and passing the param 
+    const getBooking = await connection.query(`select c.name as customer_name, b.checkin_date, 
+    h.name as hotel_name,
+    b.nights as number_of_nights,
+    h.postcode as hotel_postcode
+    from customers c
+    inner join bookings b on b.customer_id=c.id
+    inner join hotels h on h.id=b.hotel_id
+    where c.id=$1`, [customerId])
+
+    // responding with the information that i got from the connection
+    await res.json(getBooking.rows);
+}
+
 app.use(bodyParser.json())
 app.get("/hotels", getAllHotels);
+app.get("/customers/:customerId/bookings", getEspecificBookingById);
 app.post("/hotels", addNewHotelRow);
 app.post("/customers", addNewCustomerRow);
 
