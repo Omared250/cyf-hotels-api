@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/Omared250/cyf-hotels-api#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "nodemon": "^1.19.4",
     "npm": "^8.1.3",
