@@ -181,6 +181,22 @@ const api = () => {
         } 
     }
 
+    const deleteHotel = async (req, res) => {
+        const hotelId = req.params.hotelId;
+
+        const bookingQuery = `select * from bookings where hotel_id=$1`;
+        const deleteQuery = `delete from hotels where id=$1`;
+
+        const getBooking = await connection.query(bookingQuery, [hotelId]);
+
+        if (!getBooking) {
+            return res.status(400).json({message : "The hotel cannot be delete because have bookings"})
+        } else {
+            await connection.query(deleteQuery, [hotelId]);
+            return await res.send("The hotel have been deleted");
+        }
+    }
+
     return {
         getAllHotels,
         getHotelsById,
@@ -190,7 +206,8 @@ const api = () => {
         addNewHotelRow,
         addNewCustomerRow,
         updateCustomer,
-        deleteCustomer
+        deleteCustomer,
+        deleteHotel
     }
 }
 
