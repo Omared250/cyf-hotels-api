@@ -45,7 +45,21 @@ const api = () => {
         where c.id=$1`, [customerId])
     
         // responding with the information that i got from the connection
-        await res.json(getBooking.rows);
+        return await res.json(getBooking.rows);
+    }
+
+    const getAllCustomers = async (req, res) => {
+        const query = 'select * from customers order by id';
+        const getCustomers = await connection.query(query);
+        return await res.json(getCustomers.rows);
+    }
+
+    const getCustomerById = async (req, res) => {
+        const customerId = req.params.customerId;
+        const query = 'select * from customers where id=$1';
+
+        const getCustomer = await connection.query(query, [customerId]);
+        return await res.json(getCustomer.rows);
     }
 
     const addNewCustomerRow = async (req, res) => {
@@ -124,18 +138,45 @@ const api = () => {
             // catching errors
             console.error(err);
         }
-    } 
+    }
+
+    const updateCustomer = async (req, res) => {
+        const customerId = req.params.customerId;
+        const customerBody = req.body;
+
+        if (customerBody.email === '') {
+            res.status(400).json({message: "The email is not valid"})
+        } else {
+            const result = await connection.query(`update customers set 
+            name=$1, email=$2, address=$3, city=$4, 
+            postcode=$5, country=$6 where id=$7 returning id`, 
+            [customerBody.name, customerBody.email, customerBody.address, customerBody.city, customerBody.postcode,
+                customerBody.country,
+                customerId
+            ])
+
+            return await res.json({
+                "customer_id" : result.rows[0].id,
+                "customer_name" : customerBody.name,
+                "customer_email" : customerBody.email,
+                "customer_address" : customerBody.address,
+                "customer_city" : customerBody.city,
+                "customer_postcode" : customerBody.postcode,
+                "customer_country" : customerBody.country
+            })
+        }
+    }
 
     return {
         getAllHotels,
         getHotelsById,
         getEspecificBookingById,
+        getAllCustomers,
+        getCustomerById,
         addNewHotelRow,
-        addNewCustomerRow
+        addNewCustomerRow,
+        updateCustomer
     }
 }
 
 module.exports = api;
-
-
-

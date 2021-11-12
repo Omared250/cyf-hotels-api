@@ -10,8 +10,11 @@ app.use(bodyParser.json())
 app.get("/hotels", api.getAllHotels);
 app.get("/hotels/:hotelId", api.getHotelsById);
 app.get("/customers/:customerId/bookings", api.getEspecificBookingById);
+app.get("/customers", api.getAllCustomers);
+app.get("/customers/:customerId", api.getCustomerById);
 app.post("/hotels", api.addNewHotelRow);
 app.post("/customers", api.addNewCustomerRow);
+app.patch("/customers/:customerId", api.updateCustomer);
 
 const port = 4000;
 app.listen(port, () => console.log(`app listenign on port: ${port}`));
