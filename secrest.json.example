@@ -1,0 +1,9 @@
+Here you have a example of the requirements that you need to connect to your database
+
+{
+    "user": "Your username",
+    "host": "host name",
+    "database": "database name",
+    "password": "password",
+    "port": "port where your database is listening"
+}
