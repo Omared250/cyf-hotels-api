@@ -15,6 +15,7 @@ app.get("/customers/:customerId", api.getCustomerById);
 app.post("/hotels", api.addNewHotelRow);
 app.post("/customers", api.addNewCustomerRow);
 app.patch("/customers/:customerId", api.updateCustomer);
+app.delete("/customers/:customerId", api.deleteCustomer);
 
 const port = 4000;
 app.listen(port, () => console.log(`app listenign on port: ${port}`));

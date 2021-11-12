@@ -167,6 +167,20 @@ const api = () => {
         }
     }
 
+    const deleteCustomer = async (req, res) => {
+        const customerId = req.params.customerId;
+
+        const bookingQuery = `delete from bookings where customer_id=$1`;
+        const customerQuery = `delete from customers where id=$1`;
+
+        const deleteBooking = await connection.query(bookingQuery, [customerId]);
+
+        if (deleteBooking) {
+            await connection.query(customerQuery, [customerId]);
+            return res.send('Customer deleted');
+        } 
+    }
+
     return {
         getAllHotels,
         getHotelsById,
@@ -175,7 +189,8 @@ const api = () => {
         getCustomerById,
         addNewHotelRow,
         addNewCustomerRow,
-        updateCustomer
+        updateCustomer,
+        deleteCustomer
     }
 }
 
