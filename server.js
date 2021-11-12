@@ -1,16 +1,11 @@
 const express = require('express');
+const secrest = require('./secrest.json');
 const bodyParser = require('body-parser');
 const app = express();
 
 const { Pool } = require('pg');
 
-const connection = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'cyf_hotels',
-    password: 'Meneer2021',
-    port: '5432'
-});
+const connection = new Pool(secrest);
 
 const getAllHotels = async (req, res) => {
     try {
@@ -112,9 +107,9 @@ const getEspecificBookingById = async (req, res) => {
     const customerId = req.params.customerId;
 
     // checking if the id is a valid number
-    if (!Number.isInteger(customerId)) {
-        return res.status(400).send('The given ID is not valid!')
-    }
+    // if (!Number.isInteger(customerId)) {
+    //     return res.status(400).send('The given ID is not valid!')
+    // }
 
     // making the connection with the data base and passing the param 
     const getBooking = await connection.query(`select c.name as customer_name, b.checkin_date, 
