@@ -8,6 +8,7 @@ const api = apiFunction();
 
 app.use(bodyParser.json())
 app.get("/hotels", api.getAllHotels);
+app.get("/hotels/:hotelId", api.getHotelsById);
 app.get("/customers/:customerId/bookings", api.getEspecificBookingById);
 app.post("/hotels", api.addNewHotelRow);
 app.post("/customers", api.addNewCustomerRow);
