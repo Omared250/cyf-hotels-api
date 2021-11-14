@@ -13,14 +13,18 @@ const api = () => {
         }
     }
 
+    const isAnInteger = async (integer) => {
+        return Number.isInteger(integer) && integer > 0;
+    }
+
     const getHotelsById = async (req, res) => {
         const hotelId = req.params.hotelId;
+        
+        if (!isAnInteger(hotelId)) {
+            return res.status(400).json({message: 'The given id is invalid!!'})
+        }
+            
         const query = 'select * from hotels where id=$1';
-
-        // if (!Number.isInteger(hotelId)) {
-        //     res.status(400).json({message: 'The given id is invalid!!'})
-        // }
-
         const getHotel = await connection.query(query, [hotelId]);
         await res.json(getHotel.rows);
     }
@@ -140,31 +144,55 @@ const api = () => {
         }
     }
 
-    const updateCustomer = async (req, res) => {
-        const customerId = req.params.customerId;
-        const customerBody = req.body;
+    const replaceCustomerValues = (customer, newCustomer) => {
+        // replace only the fields comming from newCustomer ...^
+        // newCustomer does not have all the fields!
+        //customer = {id: 1, email: '', ...}
+        let updatedCustomer = {}; // creating the same object as customer
+        for (const propertyName in customer) {
+          updatedCustomer[propertyName] = customer[propertyName];
+        }
+        for (const propertyName in newCustomer) {
+          // ONLY filling the properties that come from newCustomer
+          updatedCustomer[propertyName] = newCustomer[propertyName];
+        }
+      
+        return updatedCustomer;
+    };
 
-        if (customerBody.email === '') {
-            res.status(400).json({message: "The email is not valid"})
-        } else {
-            const result = await connection.query(`update customers set 
+    const getCustomerFromDatabase = async (customerId) => {
+        const result = await connection.query(`SELECT * FROM customers WHERE id=$1`, [
+          customerId,
+        ]);
+        const dbCustomer = result.rows[0];
+        return dbCustomer;
+    };      
+
+    const updateCustomer = async (req, res) => {
+        try {
+            const customerId = req.params.customerId;
+            const customerBody = req.body;
+            
+            const dbCustomer = await getCustomerFromDatabase(customerId);
+            const customer = replaceCustomerValues(dbCustomer, customerBody);
+
+            await connection.query(`update customers set 
             name=$1, email=$2, address=$3, city=$4, 
             postcode=$5, country=$6 where id=$7 returning id`, 
-            [customerBody.name, customerBody.email, customerBody.address, customerBody.city, customerBody.postcode,
-                customerBody.country,
+            [
+                customer.name, 
+                customer.email, 
+                customer.address, 
+                customer.city, 
+                customer.postcode,
+                customer.country,
                 customerId
-            ])
-
-            return await res.json({
-                "customer_id" : result.rows[0].id,
-                "customer_name" : customerBody.name,
-                "customer_email" : customerBody.email,
-                "customer_address" : customerBody.address,
-                "customer_city" : customerBody.city,
-                "customer_postcode" : customerBody.postcode,
-                "customer_country" : customerBody.country
-            })
+            ]);
+            res.status(202).send(`Customer ${customerId} have been updated`)
+        } catch (e) {
+            console.error(e);
         }
+
     }
 
     const deleteCustomer = async (req, res) => {
@@ -183,16 +211,14 @@ const api = () => {
 
     const deleteHotel = async (req, res) => {
         const hotelId = req.params.hotelId;
-
+        
         const bookingQuery = `select * from bookings where hotel_id=$1`;
-        const deleteQuery = `delete from hotels where id=$1`;
-
         const getBooking = await connection.query(bookingQuery, [hotelId]);
 
         if (!getBooking) {
             return res.status(400).json({message : "The hotel cannot be delete because have bookings"})
         } else {
-            await connection.query(deleteQuery, [hotelId]);
+            await connection.query(`delete from hotels where id=$1`, [hotelId]);
             return await res.send("The hotel have been deleted");
         }
     }

@@ -1,5 +1,4 @@
 Here you have a example of the requirements that you need to connect to your database
-
 {
     "user": "Your username",
     "host": "host name",
